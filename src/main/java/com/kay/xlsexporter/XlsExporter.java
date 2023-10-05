@@ -69,6 +69,11 @@ public class XlsExporter<T> {
         return this;
     }
 
+    public XlsExporter<T> dataProvider(Stream<T> stream) {
+        this.dataProvider = () -> stream::iterator;
+        return this;
+    }
+
     public byte[] export() {
         try {
             createSheet();
