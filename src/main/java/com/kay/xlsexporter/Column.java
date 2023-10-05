@@ -10,4 +10,5 @@ import java.util.function.Function;
 public class Column<T> {
     private final String header;
     private final Function<T, ?> valueProvider;
+    private final Integer width;
 }

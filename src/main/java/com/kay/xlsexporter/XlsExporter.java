@@ -50,7 +50,12 @@ public class XlsExporter<T> {
     }
 
     public XlsExporter<T> addColumn(String header, Function<T, ?> valueProvider) {
-        columnList.add(new Column<>(header != null ? header : "", valueProvider));
+        columnList.add(new Column<>(header != null ? header : "", valueProvider, 30));
+        return this;
+    }
+
+    public XlsExporter<T> addColumn(String header, Function<T, ?> valueProvider, Integer width) {
+        columnList.add(new Column<>(header != null ? header : "", valueProvider, width));
         return this;
     }
 
@@ -135,7 +140,6 @@ public class XlsExporter<T> {
     private void createSheet() {
         SXSSFSheet sheet = workbook.createSheet();
         sheet.createFreezePane(0, 1);
-        sheet.setDefaultColumnWidth(30);
 
         int rowNum = 0;
         if (columnList.isEmpty()) {
@@ -146,8 +150,10 @@ public class XlsExporter<T> {
 
         for (T t : dataProvider.get()) {
             List rowValues = new ArrayList<>();
-            for (Column<T> column : columnList) {
-                rowValues.add(column.getValueProvider().apply(t));
+            for (int i = 0; i< columnList.size() ; i++) {
+                rowValues.add(columnList.get(i).getValueProvider().apply(t));
+                Integer width = columnList.get(i).getWidth();
+                sheet.setColumnWidth(i, (width > 255 ? 255 : width) * 256);
             }
             fillRow(sheet.createRow(rowNum++), rowValues);
         }
